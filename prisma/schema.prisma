@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String        @unique
+  emailVerified DateTime?
+  password      String?
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  lists         List[]
+  accounts      Account[]
+  sessions      Session[]
+  organizedEvents Event[]     @relation("EventOrganizer")
+  eventMembers  EventMember[]
+  organizedDraws DrawSession[] @relation("DrawOrganizer")
+  drawParticipants DrawParticipant[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  @@unique([identifier, token])
+}
+
+model List {
+  id          String   @id @default(cuid())
+  ownerId     String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  items       Item[]
+  eventMembers EventMember[]
+}
+
+model Item {
+  id         String   @id @default(cuid())
+  listId     String
+  title      String
+  imageUrl   String?
+  price      Decimal? @db.Decimal(10, 2)
+  linkUrl    String?
+  notes      String?  @db.Text
+  priority   Priority?
+  quantity   Int      @default(1)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  list       List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Event {
+  id          String        @id @default(cuid())
+  organizerId String
+  name        String
+  date        DateTime?
+  description String?       @db.Text
+  inviteToken String        @unique @default(cuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  organizer   User          @relation("EventOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  members     EventMember[]
+  drawSessions DrawSession[]
+}
+
+model EventMember {
+  id             String  @id @default(cuid())
+  eventId        String
+  userId         String?
+  displayName    String
+  attachedListId String?
+  role           MemberRole @default(MEMBER)
+  event          Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user           User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  attachedList   List?   @relation(fields: [attachedListId], references: [id], onDelete: SetNull)
+}
+
+enum MemberRole {
+  ORGANIZER
+  MEMBER
+}
+
+model DrawSession {
+  id           String           @id @default(cuid())
+  eventId      String?
+  organizerId  String
+  drawnAt      DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  event        Event?           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  organizer    User             @relation("DrawOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  participants DrawParticipant[]
+  exclusions   DrawExclusion[]
+  assignments  DrawAssignment[]
+}
+
+model DrawParticipant {
+  id            String      @id @default(cuid())
+  drawSessionId String
+  userId        String?
+  name          String
+  drawSession   DrawSession @relation(fields: [drawSessionId], references: [id], onDelete: Cascade)
+  user          User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  giverIn       DrawAssignment[] @relation("Giver")
+  receiverIn    DrawAssignment[] @relation("Receiver")
+  exclusionsAsGiver    DrawExclusion[] @relation("ExclusionGiver")
+  exclusionsAsReceiver DrawExclusion[] @relation("ExclusionReceiver")
+}
+
+model DrawExclusion {
+  id            String          @id @default(cuid())
+  drawSessionId String
+  giverId       String
+  receiverId    String
+  drawSession   DrawSession     @relation(fields: [drawSessionId], references: [id], onDelete: Cascade)
+  giver         DrawParticipant @relation("ExclusionGiver", fields: [giverId], references: [id], onDelete: Cascade)
+  receiver      DrawParticipant @relation("ExclusionReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+}
+
+model DrawAssignment {
+  id            String          @id @default(cuid())
+  drawSessionId String
+  giverId       String
+  receiverId    String
+  revealedAt    DateTime?
+  drawSession   DrawSession     @relation(fields: [drawSessionId], references: [id], onDelete: Cascade)
+  giver         DrawParticipant @relation("Giver", fields: [giverId], references: [id], onDelete: Cascade)
+  receiver      DrawParticipant @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+}
