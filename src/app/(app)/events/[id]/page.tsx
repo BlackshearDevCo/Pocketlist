@@ -127,7 +127,16 @@ export default async function EventDetailPage({ params }: { params: { id: string
           {event.members.map((member) => (
             <MemberCard
               key={member.id}
-              member={member}
+              member={{
+                ...member,
+                attachedList: member.attachedList ? {
+                  ...member.attachedList,
+                  items: member.attachedList.items.map((item) => ({
+                    ...item,
+                    price: item.price ? Number(item.price) : null,
+                  })),
+                } : null,
+              }}
               isMe={member.userId === userId}
             />
           ))}

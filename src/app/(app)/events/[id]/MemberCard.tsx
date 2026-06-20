@@ -5,7 +5,7 @@ import { useState } from 'react'
 interface Item {
   id: string
   title: string
-  price: unknown
+  price: number | null
   imageUrl: string | null
   linkUrl: string | null
 }
