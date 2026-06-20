@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -20,7 +20,7 @@ interface ListOption {
 
 type Step = 'loading' | 'form' | 'saving' | 'saved' | 'error'
 
-export default function SharePage() {
+function ShareForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const sharedUrl = searchParams.get('url') || ''
@@ -147,18 +147,7 @@ export default function SharePage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center flex-shrink-0">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="8" width="18" height="4" rx="1" />
-            <path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
-            <path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8" />
-          </svg>
-        </div>
-        <h1 className="font-serif text-2xl text-warm-800">Add to Pocketlist</h1>
-      </div>
-
+    <div>
       {metaError && (
         <div className="mb-4 rounded-xl bg-warm-50 border border-warm-200 p-3 text-sm text-warm-500">
           {metaError}
@@ -260,6 +249,33 @@ export default function SharePage() {
           {step === 'saving' ? 'Saving…' : 'Save to list'}
         </button>
       </form>
+    </div>
+  )
+}
+
+export default function SharePage() {
+  return (
+    <div className="max-w-lg mx-auto">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center flex-shrink-0">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="8" width="18" height="4" rx="1" />
+            <path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+            <path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8" />
+          </svg>
+        </div>
+        <h1 className="font-serif text-2xl text-warm-800">Add to Pocketlist</h1>
+      </div>
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-[40vh]">
+          <svg className="animate-spin h-6 w-6 text-brand" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        </div>
+      }>
+        <ShareForm />
+      </Suspense>
     </div>
   )
 }
