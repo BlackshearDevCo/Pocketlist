@@ -19,14 +19,8 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      })
-
+      const result = await signIn('credentials', { email, password, redirect: false })
       if (result?.error) {
         setError('Invalid email or password.')
       } else {
@@ -41,66 +35,48 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-white px-4">
+    <main className="flex min-h-screen items-center justify-center bg-parchment px-6">
       <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-indigo-600">Pocketlist</h1>
-          <p className="mt-2 text-gray-500">Sign in to your account</p>
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-brand flex items-center justify-center shadow-sm">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="8" width="18" height="4" rx="1" />
+                <path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+                <path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8" />
+              </svg>
+            </div>
+          </div>
+          <h1 className="font-serif text-3xl text-warm-800">Welcome back</h1>
+          <p className="mt-1.5 text-sm text-warm-500">Sign in to your Pocketlist</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm ring-1 ring-gray-200 p-6 space-y-4">
+        <div className="card p-6">
           {error && (
-            <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700 ring-1 ring-red-200">
+            <div className="mb-4 rounded-xl bg-brand-subtle border border-brand-tint p-3 text-sm text-brand-dark">
               {error}
             </div>
           )}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="label">Email</label>
+              <input id="email" type="email" autoComplete="email" required value={email}
+                onChange={(e) => setEmail(e.target.value)} className="input" placeholder="you@example.com" />
+            </div>
+            <div>
+              <label htmlFor="password" className="label">Password</label>
+              <input id="password" type="password" autoComplete="current-password" required value={password}
+                onChange={(e) => setPassword(e.target.value)} className="input" placeholder="••••••••" />
+            </div>
+            <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
+              {loading ? 'Signing in…' : 'Sign in'}
+            </button>
+          </form>
+        </div>
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
-        </form>
-
-        <p className="mt-4 text-center text-sm text-gray-500">
+        <p className="mt-5 text-center text-sm text-warm-500">
           Don&apos;t have an account?{' '}
-          <Link href="/register" className="text-indigo-600 font-medium hover:text-indigo-500">
-            Create one
-          </Link>
+          <Link href="/register" className="font-semibold text-brand hover:text-brand-hover">Create one</Link>
         </p>
       </div>
     </main>

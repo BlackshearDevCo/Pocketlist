@@ -43,14 +43,12 @@ export default function EditItemForm({ item, list }: Props) {
     e.preventDefault()
     setError('')
     setLoading(true)
-
     try {
       const res = await fetch(`/api/lists/${list.id}/items/${item.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, imageUrl, price, linkUrl, notes, priority, quantity }),
       })
-
       if (!res.ok) {
         const data = await res.json()
         setError(data.error || 'Failed to update item.')
@@ -68,7 +66,6 @@ export default function EditItemForm({ item, list }: Props) {
   async function handleDelete() {
     if (!confirm('Delete this item?')) return
     setDeleting(true)
-
     try {
       const res = await fetch(`/api/lists/${list.id}/items/${item.id}`, { method: 'DELETE' })
       if (res.ok) {
@@ -86,139 +83,75 @@ export default function EditItemForm({ item, list }: Props) {
 
   return (
     <>
-      <div className="flex items-center gap-3 mb-6">
-        <Link href={`/lists/${list.id}`} className="text-sm text-gray-400 hover:text-gray-600 transition-colors">
-          {list.name}
-        </Link>
-        <span className="text-gray-300">/</span>
-        <h1 className="text-2xl font-bold text-gray-900">Edit item</h1>
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-1">
+          <Link href={`/lists/${list.id}`} className="text-xs text-warm-400 hover:text-warm-600 transition-colors">{list.name}</Link>
+          <span className="text-warm-300">/</span>
+        </div>
+        <h1 className="page-title">Edit item</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+      <div className="card p-6 mb-4">
         {error && (
-          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700 ring-1 ring-red-200">{error}</div>
+          <div className="mb-4 rounded-xl bg-brand-subtle border border-brand-tint p-3 text-sm text-brand-dark">{error}</div>
         )}
-
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-            Title <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="title"
-            type="text"
-            required
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="linkUrl" className="block text-sm font-medium text-gray-700 mb-1">Link</label>
-          <input
-            id="linkUrl"
-            type="url"
-            value={linkUrl}
-            onChange={(e) => setLinkUrl(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            placeholder="https://..."
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">Price</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-              <input
-                id="price"
-                type="number"
-                min="0"
-                step="0.01"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="0.00"
-              />
+            <label htmlFor="title" className="label">Title <span className="text-brand">*</span></label>
+            <input id="title" type="text" required value={title} onChange={(e) => setTitle(e.target.value)} className="input" />
+          </div>
+          <div>
+            <label htmlFor="linkUrl" className="label">Link</label>
+            <input id="linkUrl" type="url" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)}
+              className="input" placeholder="https://…" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="price" className="label">Price</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-warm-400 text-sm">$</span>
+                <input id="price" type="number" min="0" step="0.01" value={price}
+                  onChange={(e) => setPrice(e.target.value)} className="input pl-8" placeholder="0.00" />
+              </div>
+            </div>
+            <div>
+              <label htmlFor="quantity" className="label">Quantity</label>
+              <input id="quantity" type="number" min="1" value={quantity}
+                onChange={(e) => setQuantity(e.target.value)} className="input" />
             </div>
           </div>
           <div>
-            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-            <input
-              id="quantity"
-              type="number"
-              min="1"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
+            <label htmlFor="priority" className="label">Priority</label>
+            <select id="priority" value={priority} onChange={(e) => setPriority(e.target.value)}
+              className="input bg-white">
+              {PRIORITIES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+            </select>
           </div>
-        </div>
+          <div>
+            <label htmlFor="imageUrl" className="label">Image URL</label>
+            <input id="imageUrl" type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)}
+              className="input" placeholder="https://…" />
+          </div>
+          <div>
+            <label htmlFor="notes" className="label">Notes</label>
+            <textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)}
+              rows={3} className="input resize-none" placeholder="Size, color, preferences…" />
+          </div>
+          <div className="flex gap-3 pt-1">
+            <button type="submit" disabled={loading} className="btn-primary flex-1">
+              {loading ? 'Saving…' : 'Save changes'}
+            </button>
+            <Link href={`/lists/${list.id}`} className="btn-secondary flex-1 text-center">Cancel</Link>
+          </div>
+        </form>
+      </div>
 
-        <div>
-          <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-          <select
-            id="priority"
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
-          >
-            {PRIORITIES.map((p) => (
-              <option key={p.value} value={p.value}>{p.label}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-          <input
-            id="imageUrl"
-            type="url"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            placeholder="https://..."
-          />
-        </div>
-
-        <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-          <textarea
-            id="notes"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={3}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-            placeholder="Size, color, preferences..."
-          />
-        </div>
-
-        <div className="flex gap-3 pt-1">
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex-1 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? 'Saving...' : 'Save changes'}
-          </button>
-          <Link
-            href={`/lists/${list.id}`}
-            className="flex-1 text-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            Cancel
-          </Link>
-        </div>
-      </form>
-
-      <div className="mt-6 bg-white rounded-xl border border-red-200 p-6">
+      <div className="card p-6 border-red-100">
         <h2 className="text-sm font-semibold text-red-700 mb-1">Danger zone</h2>
-        <p className="text-sm text-gray-500 mb-4">Permanently delete this item from the list.</p>
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          className="rounded-lg border border-red-300 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {deleting ? 'Deleting...' : 'Delete item'}
+        <p className="text-sm text-warm-400 mb-4">Permanently delete this item from the list.</p>
+        <button onClick={handleDelete} disabled={deleting}
+          className="rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50 transition-colors">
+          {deleting ? 'Deleting…' : 'Delete item'}
         </button>
       </div>
     </>
