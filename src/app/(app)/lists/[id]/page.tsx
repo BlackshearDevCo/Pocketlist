@@ -16,26 +16,16 @@ export default async function ListDetailPage({
   params: { id: string }
 }) {
   const session = await auth()
-
-  if (!session?.user?.id) {
-    redirect('/login')
-  }
+  if (!session?.user?.id) redirect('/login')
 
   const list = await prisma.list.findFirst({
-    where: {
-      id: params.id,
-      ownerId: session.user.id,
-    },
+    where: { id: params.id, ownerId: session.user.id },
     include: {
-      items: {
-        orderBy: { sortOrder: 'asc' },
-      },
+      items: { orderBy: { sortOrder: 'asc' } },
     },
   })
 
-  if (!list) {
-    notFound()
-  }
+  if (!list) notFound()
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -44,7 +34,13 @@ export default async function ListDetailPage({
           Lists
         </Link>
         <span className="text-gray-300">/</span>
-        <h1 className="text-2xl font-bold text-gray-900">{list.name}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 flex-1">{list.name}</h1>
+        <Link
+          href={`/lists/${list.id}/edit`}
+          className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          Edit
+        </Link>
       </div>
 
       {list.description && (
@@ -52,7 +48,9 @@ export default async function ListDetailPage({
       )}
 
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-400">{list.items.length} {list.items.length === 1 ? 'item' : 'items'}</p>
+        <p className="text-sm text-gray-400">
+          {list.items.length} {list.items.length === 1 ? 'item' : 'items'}
+        </p>
         <Link
           href={`/lists/${list.id}/add`}
           className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors"
@@ -79,7 +77,7 @@ export default async function ListDetailPage({
           {list.items.map((item) => (
             <li
               key={item.id}
-              className="bg-white rounded-xl border border-gray-200 p-4 flex gap-4 items-start hover:border-indigo-200 transition-colors"
+              className="bg-white rounded-xl border border-gray-200 p-4 flex gap-4 items-start hover:border-indigo-200 transition-colors group"
             >
               {item.imageUrl && (
                 <div className="flex-shrink-0 h-16 w-16 rounded-lg overflow-hidden bg-gray-100">
@@ -95,7 +93,7 @@ export default async function ListDetailPage({
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-medium text-gray-900 truncate">
+                  <h3 className="font-medium text-gray-900">
                     {item.linkUrl ? (
                       <a
                         href={item.linkUrl}
@@ -109,11 +107,19 @@ export default async function ListDetailPage({
                       item.title
                     )}
                   </h3>
-                  {item.priority && (
-                    <span className={`flex-shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${priorityStyles[item.priority]}`}>
-                      {item.priority.charAt(0) + item.priority.slice(1).toLowerCase()}
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {item.priority && (
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${priorityStyles[item.priority]}`}>
+                        {item.priority.charAt(0) + item.priority.slice(1).toLowerCase()}
+                      </span>
+                    )}
+                    <Link
+                      href={`/lists/${list.id}/items/${item.id}/edit`}
+                      className="text-xs text-gray-400 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-all"
+                    >
+                      Edit
+                    </Link>
+                  </div>
                 </div>
                 {item.price && (
                   <p className="text-sm font-semibold text-indigo-600 mt-1">
