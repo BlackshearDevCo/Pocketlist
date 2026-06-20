@@ -74,6 +74,11 @@ export default async function EventDetailPage({ params }: { params: { id: string
             <p className="text-sm text-warm-600 mt-2">{event.description}</p>
           )}
         </div>
+        {isOrganizer && (
+          <Link href={`/events/${event.id}/edit`} className="btn-ghost text-sm px-3 py-1.5 flex-shrink-0">
+            Edit
+          </Link>
+        )}
       </div>
 
       {/* Invite link */}
