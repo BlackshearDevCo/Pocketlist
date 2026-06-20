@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/lists'
@@ -35,6 +35,33 @@ export default function LoginPage() {
   }
 
   return (
+    <div className="card p-6">
+      {error && (
+        <div className="mb-4 rounded-xl bg-brand-subtle border border-brand-tint p-3 text-sm text-brand-dark">
+          {error}
+        </div>
+      )}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="label">Email</label>
+          <input id="email" type="email" autoComplete="email" required value={email}
+            onChange={(e) => setEmail(e.target.value)} className="input" placeholder="you@example.com" />
+        </div>
+        <div>
+          <label htmlFor="password" className="label">Password</label>
+          <input id="password" type="password" autoComplete="current-password" required value={password}
+            onChange={(e) => setPassword(e.target.value)} className="input" placeholder="••••••••" />
+        </div>
+        <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
+          {loading ? 'Signing in…' : 'Sign in'}
+        </button>
+      </form>
+    </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
     <main className="flex min-h-screen items-center justify-center bg-parchment px-6">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
@@ -51,28 +78,9 @@ export default function LoginPage() {
           <p className="mt-1.5 text-sm text-warm-500">Sign in to your Pocketlist</p>
         </div>
 
-        <div className="card p-6">
-          {error && (
-            <div className="mb-4 rounded-xl bg-brand-subtle border border-brand-tint p-3 text-sm text-brand-dark">
-              {error}
-            </div>
-          )}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="label">Email</label>
-              <input id="email" type="email" autoComplete="email" required value={email}
-                onChange={(e) => setEmail(e.target.value)} className="input" placeholder="you@example.com" />
-            </div>
-            <div>
-              <label htmlFor="password" className="label">Password</label>
-              <input id="password" type="password" autoComplete="current-password" required value={password}
-                onChange={(e) => setPassword(e.target.value)} className="input" placeholder="••••••••" />
-            </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
-              {loading ? 'Signing in…' : 'Sign in'}
-            </button>
-          </form>
-        </div>
+        <Suspense fallback={<div className="card p-6" />}>
+          <LoginForm />
+        </Suspense>
 
         <p className="mt-5 text-center text-sm text-warm-500">
           Don&apos;t have an account?{' '}
