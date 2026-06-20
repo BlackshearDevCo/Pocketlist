@@ -11,7 +11,8 @@ export default auth((req) => {
     nextUrl.pathname === '/register' ||
     nextUrl.pathname.startsWith('/api/auth') ||
     nextUrl.pathname.startsWith('/api/share') ||
-    nextUrl.pathname === '/api/register'
+    nextUrl.pathname === '/api/register' ||
+    nextUrl.pathname.startsWith('/events/join')
 
   if (!isLoggedIn && !isPublicPath) {
     const loginUrl = new URL('/login', nextUrl)
