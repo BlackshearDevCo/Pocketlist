@@ -65,7 +65,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
       {/* Main */}
       <div className="flex-1 md:pl-60">
-        <main className="pt-16 md:pt-0 p-4 md:p-8">
+        <main className="pt-20 md:pt-0 px-4 py-6 md:p-8 pb-10">
           {children}
         </main>
       </div>
