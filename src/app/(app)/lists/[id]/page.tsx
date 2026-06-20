@@ -24,22 +24,22 @@ export default async function ListDetailPage({ params }: { params: { id: string 
   return (
     <div className="max-w-3xl mx-auto">
       {/* Header */}
-      <div className="flex items-start justify-between mb-1">
+      <div className="flex items-start justify-between mb-6">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-2">
             <Link href="/lists" className="text-xs text-warm-400 hover:text-warm-600 transition-colors">Lists</Link>
             <span className="text-warm-300">/</span>
           </div>
           <h1 className="page-title">{list.name}</h1>
-          {list.description && <p className="text-warm-400 text-sm mt-1">{list.description}</p>}
+          {list.description && <p className="text-warm-400 text-sm mt-1.5">{list.description}</p>}
         </div>
-        <Link href={`/lists/${list.id}/edit`} className="btn-ghost text-sm px-3 py-1.5 mt-1">
+        <Link href={`/lists/${list.id}/edit`} className="btn-ghost text-sm px-3 py-1.5 mt-1 flex-shrink-0">
           Edit
         </Link>
       </div>
 
       {/* Actions bar */}
-      <div className="flex items-center justify-between mt-5 mb-4">
+      <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-warm-400">{list.items.length} {list.items.length === 1 ? 'item' : 'items'}</p>
         <Link href={`/lists/${list.id}/add`} className="btn-primary text-sm px-3 py-2">
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">

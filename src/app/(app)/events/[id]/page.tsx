@@ -75,10 +75,13 @@ export default async function EventDetailPage({ params }: { params: { id: string
       </div>
 
       {/* Invite link */}
-      <div className="card p-4 mb-8 overflow-hidden">
-        <p className="text-xs text-warm-400 mb-2">Invite link</p>
-        <div className="flex items-center gap-3 min-w-0">
-          <p className="text-sm text-warm-600 truncate flex-1 min-w-0 font-mono">{inviteUrl}</p>
+      <div className="card p-4 mb-8">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-warm-400 mb-0.5">Invite link</p>
+            <p className="hidden sm:block text-sm text-warm-600 font-mono truncate">{inviteUrl}</p>
+            <p className="sm:hidden text-sm text-warm-500">Share to invite others</p>
+          </div>
           <CopyButton text={inviteUrl} />
         </div>
       </div>
