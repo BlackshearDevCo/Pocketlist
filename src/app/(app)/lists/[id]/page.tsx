@@ -80,7 +80,7 @@ export default async function ListDetailPage({ params }: { params: { id: string 
                       </span>
                     )}
                     <Link href={`/lists/${list.id}/items/${item.id}/edit`}
-                      className="text-xs text-warm-300 hover:text-brand opacity-0 group-hover:opacity-100 transition-all">
+                      className="text-xs text-warm-400 hover:text-brand md:opacity-0 md:group-hover:opacity-100 transition-all px-2 py-1 -mx-2 -my-1">
                       Edit
                     </Link>
                   </div>

@@ -33,32 +33,28 @@ export default function AttachListForm({
 
   return (
     <div>
-      <label className="label" htmlFor="attach-list">
-        Share a list with this event
-      </label>
-      <div className="relative">
-        <select
-          id="attach-list"
-          className="input pr-8 appearance-none"
-          value={listId}
-          onChange={(e) => handleChange(e.target.value)}
-          disabled={saving}
-        >
-          <option value="">— No list selected —</option>
-          {myLists.map((list) => (
-            <option key={list.id} value={list.id}>
-              {list.name}
-            </option>
-          ))}
-        </select>
-        {saving && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-warm-400">
-            Saving…
-          </span>
-        )}
+      <div className="flex items-center justify-between mb-1.5">
+        <label className="label mb-0" htmlFor="attach-list">
+          Share a list with this event
+        </label>
+        {saving && <span className="text-xs text-warm-400">Saving…</span>}
       </div>
+      <select
+        id="attach-list"
+        className="input"
+        value={listId}
+        onChange={(e) => handleChange(e.target.value)}
+        disabled={saving}
+      >
+        <option value="">— No list selected —</option>
+        {myLists.map((list) => (
+          <option key={list.id} value={list.id}>
+            {list.name}
+          </option>
+        ))}
+      </select>
       {myLists.length === 0 && (
-        <p className="text-xs text-warm-400 mt-1">
+        <p className="text-xs text-warm-400 mt-1.5">
           <Link href="/lists/new" className="text-brand hover:underline">
             Create a list
           </Link>{' '}
