@@ -38,7 +38,9 @@ export default async function EventDetailPage({ params }: { params: { id: string
     orderBy: { updatedAt: 'desc' },
   })
 
-  const inviteUrl = `${process.env.NEXTAUTH_URL}/events/join/${event.inviteToken}`
+  const baseUrl = process.env.NEXTAUTH_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  const inviteUrl = `${baseUrl}/events/join/${event.inviteToken}`
 
   return (
     <div className="max-w-4xl mx-auto">
