@@ -16,3 +16,25 @@ export async function GET() {
 
   return NextResponse.json(lists)
 }
+
+export async function POST(req: Request) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { name, description } = await req.json()
+  if (!name?.trim()) {
+    return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+  }
+
+  const list = await prisma.list.create({
+    data: {
+      ownerId: session.user.id,
+      name: name.trim(),
+      description: description?.trim() || null,
+    },
+  })
+
+  return NextResponse.json(list, { status: 201 })
+}
