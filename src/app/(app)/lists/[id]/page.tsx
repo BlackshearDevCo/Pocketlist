@@ -59,26 +59,26 @@ export default async function ListDetailPage({ params }: { params: { id: string 
       ) : (
         <ul className="space-y-3">
           {list.items.map((item) => (
-            <li key={item.id} className={`card p-4 flex gap-4 items-start group hover:border-warm-300 transition-colors ${item.purchased ? 'opacity-60' : ''}`}>
-              <div className="flex-shrink-0 mt-0.5">
+            <li key={item.id} className={`card p-4 flex gap-4 items-center group transition-colors ${item.purchased ? 'bg-warm-50 border-warm-100' : 'hover:border-warm-300'}`}>
+              <div className="flex-shrink-0">
                 <PurchaseCheckbox itemId={item.id} listId={list.id} purchased={item.purchased} />
               </div>
               {item.imageUrl && (
-                <div className="flex-shrink-0 h-16 w-16 rounded-xl overflow-hidden bg-parchment">
+                <div className={`flex-shrink-0 h-16 w-16 rounded-xl overflow-hidden bg-parchment ${item.purchased ? 'opacity-40' : ''}`}>
                   <Image src={item.imageUrl} alt={item.title} width={64} height={64}
                     className="h-full w-full object-cover" unoptimized />
                 </div>
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className={`font-medium leading-snug ${item.purchased ? 'line-through text-warm-400' : 'text-warm-800'}`}>
+                  <h3 className={`font-medium leading-snug transition-colors ${item.purchased ? 'line-through text-warm-300' : 'text-warm-800'}`}>
                     {item.linkUrl ? (
                       <a href={item.linkUrl} target="_blank" rel="noopener noreferrer"
                         className="hover:text-brand transition-colors">{item.title}</a>
                     ) : item.title}
                   </h3>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    {item.priority && (
+                    {item.priority && !item.purchased && (
                       <span className={priorityBadge[item.priority]}>
                         {item.priority.charAt(0) + item.priority.slice(1).toLowerCase()}
                       </span>
@@ -90,12 +90,12 @@ export default async function ListDetailPage({ params }: { params: { id: string 
                   </div>
                 </div>
                 {item.price && (
-                  <p className="text-sm font-semibold text-brand mt-1">${Number(item.price).toFixed(2)}</p>
+                  <p className={`text-sm font-semibold mt-1 ${item.purchased ? 'text-warm-300' : 'text-brand'}`}>${Number(item.price).toFixed(2)}</p>
                 )}
-                {item.notes && (
+                {item.notes && !item.purchased && (
                   <p className="text-sm text-warm-400 mt-1 line-clamp-2">{item.notes}</p>
                 )}
-                {item.quantity > 1 && (
+                {item.quantity > 1 && !item.purchased && (
                   <p className="text-xs text-warm-300 mt-1">Qty: {item.quantity}</p>
                 )}
               </div>
