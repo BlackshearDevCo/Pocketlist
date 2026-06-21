@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { notFound, redirect } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import PurchaseCheckbox from './PurchaseCheckbox'
 
 const priorityBadge: Record<string, string> = {
   HIGH: 'badge-high',
@@ -58,7 +59,10 @@ export default async function ListDetailPage({ params }: { params: { id: string 
       ) : (
         <ul className="space-y-3">
           {list.items.map((item) => (
-            <li key={item.id} className="card p-4 flex gap-4 items-start group hover:border-warm-300 transition-colors">
+            <li key={item.id} className={`card p-4 flex gap-4 items-start group hover:border-warm-300 transition-colors ${item.purchased ? 'opacity-60' : ''}`}>
+              <div className="flex-shrink-0 mt-0.5">
+                <PurchaseCheckbox itemId={item.id} listId={list.id} purchased={item.purchased} />
+              </div>
               {item.imageUrl && (
                 <div className="flex-shrink-0 h-16 w-16 rounded-xl overflow-hidden bg-parchment">
                   <Image src={item.imageUrl} alt={item.title} width={64} height={64}
@@ -67,7 +71,7 @@ export default async function ListDetailPage({ params }: { params: { id: string 
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-medium text-warm-800 leading-snug">
+                  <h3 className={`font-medium leading-snug ${item.purchased ? 'line-through text-warm-400' : 'text-warm-800'}`}>
                     {item.linkUrl ? (
                       <a href={item.linkUrl} target="_blank" rel="noopener noreferrer"
                         className="hover:text-brand transition-colors">{item.title}</a>
