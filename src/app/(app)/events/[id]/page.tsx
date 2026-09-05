@@ -163,9 +163,8 @@ export default async function EventDetailPage({ params }: { params: { id: string
       </div>
 
       {/* Draw Names */}
-      {isOrganizer ? (
-        <DrawManager eventId={event.id} initialDraw={drawData} />
-      ) : (
+      {isOrganizer && <DrawManager eventId={event.id} initialDraw={drawData} />}
+      {myPickData.drawn && (
         <MyPickCard
           eventId={event.id}
           drawn={myPickData.drawn}

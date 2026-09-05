@@ -14,29 +14,15 @@ interface Props {
 }
 
 export default function MyPickCard({ eventId, drawn, myAssignment }: Props) {
-  const [revealed, setRevealed] = useState(!!myAssignment?.revealedAt)
+  const [flipped, setFlipped] = useState(!!myAssignment?.revealedAt)
   const [receiverName, setReceiverName] = useState(myAssignment?.receiverName ?? null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Not drawn yet
-  if (!drawn || !myAssignment) {
-    return (
-      <div className="card p-5 mb-8 flex items-center gap-4">
-        <div className="w-10 h-10 rounded-full bg-warm-100 flex items-center justify-center flex-shrink-0">
-          <svg className="w-5 h-5 text-warm-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-          </svg>
-        </div>
-        <div>
-          <p className="text-sm font-medium text-warm-700">Secret pick</p>
-          <p className="text-xs text-warm-400">The organizer hasn't run the draw yet.</p>
-        </div>
-      </div>
-    )
-  }
+  if (!drawn || !myAssignment) return null
 
   async function handleReveal() {
+    if (flipped) return
     setLoading(true)
     setError('')
     try {
@@ -44,7 +30,7 @@ export default function MyPickCard({ eventId, drawn, myAssignment }: Props) {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to reveal')
       setReceiverName(data.receiverName)
-      setRevealed(true)
+      setFlipped(true)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong')
     } finally {
@@ -52,39 +38,99 @@ export default function MyPickCard({ eventId, drawn, myAssignment }: Props) {
     }
   }
 
-  // Revealed state
-  if (revealed && receiverName) {
-    return (
-      <div className="card p-5 mb-8">
-        <p className="text-xs font-semibold text-brand uppercase tracking-wide mb-2">Your secret pick</p>
-        <p className="text-2xl font-semibold text-warm-800 mb-3">{receiverName}</p>
-        {myAssignment.receiverListId && (
-          <Link
-            href={`/lists/${myAssignment.receiverListId}`}
-            className="text-sm font-medium text-brand hover:text-brand-hover transition-colors"
-          >
-            View their list →
-          </Link>
-        )}
-      </div>
-    )
-  }
-
-  // Tap to reveal
   return (
-    <div className="card p-5 mb-8">
-      <p className="text-xs font-semibold text-brand uppercase tracking-wide mb-2">Your secret pick</p>
-      <p className="text-sm text-warm-400 mb-4">
-        Names have been drawn — tap below to find out who you got.
-      </p>
-      {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
-      <button
-        onClick={handleReveal}
-        disabled={loading}
-        className="btn-primary"
-      >
-        {loading ? 'Revealing…' : 'Reveal my pick'}
-      </button>
+    <div className="mb-8">
+      <style>{`
+        .flip-scene {
+          perspective: 900px;
+        }
+        .flip-card {
+          position: relative;
+          width: 100%;
+          height: 160px;
+          transform-style: preserve-3d;
+          transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+        .flip-card.is-flipped {
+          transform: rotateY(180deg);
+        }
+        .flip-face {
+          position: absolute;
+          inset: 0;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          border-radius: 16px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+        }
+        .flip-front {
+          background: var(--card-bg, #F2F5F3);
+          border: 1px solid var(--card-border, #D2DAD5);
+          cursor: pointer;
+        }
+        .flip-front:hover .gift-icon {
+          transform: translateY(-3px);
+          transition: transform 0.2s ease;
+        }
+        .flip-back {
+          background: var(--brand-bg, #6B8F71);
+          transform: rotateY(180deg);
+        }
+        @media (prefers-color-scheme: dark) {
+          .flip-front {
+            --card-bg: #222C25;
+            --card-border: #2E3D32;
+          }
+          .flip-back {
+            --brand-bg: #4A6E50;
+          }
+        }
+      `}</style>
+
+      <h2 className="section-title mb-3">Your Secret Pick</h2>
+
+      <div className="flip-scene" onClick={!flipped ? handleReveal : undefined}>
+        <div className={`flip-card ${flipped ? 'is-flipped' : ''}`}>
+
+          {/* Front — tap to reveal */}
+          <div className="flip-face flip-front select-none">
+            {loading ? (
+              <svg className="animate-spin w-8 h-8 text-brand" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            ) : (
+              <>
+                <div className="gift-icon text-4xl mb-3" style={{ transition: 'transform 0.2s ease' }}>🎁</div>
+                <p className="text-sm font-semibold text-warm-700">Tap to reveal your pick</p>
+                <p className="text-xs text-warm-400 mt-1">Names have been drawn</p>
+              </>
+            )}
+          </div>
+
+          {/* Back — revealed name */}
+          <div className="flip-face flip-back">
+            <p className="text-xs font-semibold text-white/60 uppercase tracking-widest mb-2">You got</p>
+            <p className="text-3xl font-bold text-white text-center leading-tight" style={{ textWrap: 'balance' }}>
+              {receiverName}
+            </p>
+            {myAssignment.receiverListId && (
+              <Link
+                href={`/lists/${myAssignment.receiverListId}`}
+                onClick={(e) => e.stopPropagation()}
+                className="mt-4 text-xs font-semibold text-white/80 hover:text-white transition-colors underline underline-offset-2"
+              >
+                View their list →
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
     </div>
   )
 }
