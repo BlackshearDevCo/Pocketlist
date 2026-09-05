@@ -80,7 +80,7 @@ export default function MemberCard({ member, isMe }: Props) {
                     <img src={item.imageUrl} alt="" className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-warm-700 truncate">{item.title}</p>
+                    <p className="text-sm text-warm-700 break-words">{item.title}</p>
                     {item.price && (
                       <p className="text-xs text-warm-400">${Number(item.price).toFixed(2)}</p>
                     )}
