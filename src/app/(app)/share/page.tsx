@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import ImageInput from '@/components/ImageInput'
 
 interface Metadata {
   title?: string
@@ -224,21 +225,19 @@ function ShareForm() {
               className="input" placeholder="https://…" />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="label">Price</label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-warm-400 text-sm">$</span>
-                <input type="number" min="0" step="0.01" value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="input pl-8" placeholder="0.00" />
-              </div>
+          <div>
+            <label className="label">Price</label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-warm-400 text-sm">$</span>
+              <input type="number" min="0" step="0.01" value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="input pl-8" placeholder="0.00" />
             </div>
-            <div>
-              <label className="label">Image URL</label>
-              <input type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)}
-                className="input" placeholder="https://…" />
-            </div>
+          </div>
+
+          <div>
+            <label className="label">Image</label>
+            <ImageInput value={imageUrl} onChange={setImageUrl} />
           </div>
 
           <div>
