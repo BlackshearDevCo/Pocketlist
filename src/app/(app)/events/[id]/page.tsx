@@ -5,6 +5,8 @@ import Link from 'next/link'
 import CopyButton from './CopyButton'
 import AttachListForm from './AttachListForm'
 import MemberCard from './MemberCard'
+import DrawManager, { type DrawData } from './DrawManager'
+import MyPickCard from './MyPickCard'
 
 export default async function EventDetailPage({ params }: { params: { id: string } }) {
   const session = await auth()
@@ -23,6 +25,15 @@ export default async function EventDetailPage({ params }: { params: { id: string
         },
         orderBy: { role: 'desc' },
       },
+      drawSessions: {
+        include: {
+          participants: true,
+          exclusions: true,
+          assignments: { include: { giver: true, receiver: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+      },
     },
   })
 
@@ -32,6 +43,59 @@ export default async function EventDetailPage({ params }: { params: { id: string
   if (!myMember) redirect('/events')
 
   const isOrganizer = myMember.role === 'ORGANIZER'
+
+  // Serialize draw session for client components
+  const rawDraw = event.drawSessions[0] ?? null
+  const drawData: DrawData | null = rawDraw
+    ? {
+        id: rawDraw.id,
+        drawnAt: rawDraw.drawnAt?.toISOString() ?? null,
+        participants: rawDraw.participants.map((p) => ({
+          id: p.id,
+          name: p.name,
+          userId: p.userId,
+        })),
+        exclusions: rawDraw.exclusions.map((e) => ({
+          id: e.id,
+          giverId: e.giverId,
+          receiverId: e.receiverId,
+        })),
+        assignments: rawDraw.assignments.map((a) => ({
+          id: a.id,
+          giverId: a.giverId,
+          giverName: a.giver.name,
+          receiverId: a.receiverId,
+          receiverName: a.receiver.name,
+          revealedAt: a.revealedAt?.toISOString() ?? null,
+          isMyAssignment: a.giver.userId === userId,
+        })),
+      }
+    : null
+
+  // For MyPickCard: find this user's assignment and receiver's list
+  const myParticipant = rawDraw?.participants.find((p) => p.userId === userId) ?? null
+  const myAssignmentRaw = myParticipant
+    ? rawDraw?.assignments.find((a) => a.giverId === myParticipant.id) ?? null
+    : null
+  const receiverParticipant = myAssignmentRaw
+    ? rawDraw?.participants.find((p) => p.id === myAssignmentRaw.receiverId) ?? null
+    : null
+  const receiverMember = receiverParticipant?.userId
+    ? event.members.find((m) => m.userId === receiverParticipant.userId) ?? null
+    : null
+
+  const myPickData = rawDraw
+    ? {
+        drawn: !!rawDraw.drawnAt,
+        myAssignment: myAssignmentRaw
+          ? {
+              revealedAt: myAssignmentRaw.revealedAt?.toISOString() ?? null,
+              receiverName: myAssignmentRaw.receiver.name,
+              receiverListId: receiverMember?.attachedListId ?? null,
+            }
+          : null,
+      }
+    : { drawn: false, myAssignment: null }
 
   const myLists = await prisma.list.findMany({
     where: { ownerId: userId },
@@ -93,6 +157,17 @@ export default async function EventDetailPage({ params }: { params: { id: string
           <CopyButton text={inviteUrl} />
         </div>
       </div>
+
+      {/* Draw Names */}
+      {isOrganizer ? (
+        <DrawManager eventId={event.id} initialDraw={drawData} />
+      ) : (
+        <MyPickCard
+          eventId={event.id}
+          drawn={myPickData.drawn}
+          myAssignment={myPickData.myAssignment}
+        />
+      )}
 
       {/* My list selector */}
       <div className="mb-8">
