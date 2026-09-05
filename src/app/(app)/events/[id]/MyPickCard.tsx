@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import confetti from 'canvas-confetti'
 
 interface Props {
   eventId: string
@@ -22,15 +23,9 @@ export default function MyPickCard({ eventId, drawn, myAssignment }: Props) {
   if (!drawn || !myAssignment) return null
 
   function fireConfetti() {
-    const script = document.createElement('script')
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.browser.min.js'
-    script.onload = () => {
-      const confetti = (window as any).confetti
-      confetti({ particleCount: 120, spread: 80, origin: { y: 0.55 } })
-      setTimeout(() => confetti({ particleCount: 60, spread: 100, origin: { y: 0.5, x: 0.3 }, angle: 60 }), 200)
-      setTimeout(() => confetti({ particleCount: 60, spread: 100, origin: { y: 0.5, x: 0.7 }, angle: 120 }), 300)
-    }
-    document.head.appendChild(script)
+    confetti({ particleCount: 120, spread: 80, origin: { y: 0.55 } })
+    setTimeout(() => confetti({ particleCount: 60, spread: 100, origin: { y: 0.5, x: 0.3 }, angle: 60 }), 200)
+    setTimeout(() => confetti({ particleCount: 60, spread: 100, origin: { y: 0.5, x: 0.7 }, angle: 120 }), 300)
   }
 
   async function handleReveal() {
