@@ -2,7 +2,7 @@
   "name": "Pocketlist",
   "short_name": "Pocketlist",
   "description": "Your personal wishlist, anywhere.",
-  "start_url": "/",
+  "start_url": "/lists",
   "display": "standalone",
   "background_color": "#E8EDEA",
   "theme_color": "#6B8F71",
