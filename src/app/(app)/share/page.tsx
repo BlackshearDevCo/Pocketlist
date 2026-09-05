@@ -29,7 +29,8 @@ function ShareForm() {
   const sharedUrl = searchParams.get('url') || urlFromText || ''
   // Use title param as title, but not if it's just the URL or Amazon's generic share text
   const rawTitle = searchParams.get('title') || ''
-  const sharedTitle = (rawTitle && rawTitle !== sharedUrl && rawTitle !== 'Check out this deal on Amazon' && !rawTitle.startsWith('http')) ? rawTitle : ''
+  const isGenericTitle = !rawTitle || rawTitle.startsWith('http') || /check.*(this\s+)?out|amazon/i.test(rawTitle)
+  const sharedTitle = isGenericTitle ? '' : rawTitle
 
   const [step, setStep] = useState<Step>(sharedUrl ? 'loading' : 'form')
   const [metadata, setMetadata] = useState<Metadata | null>(null)
@@ -68,6 +69,7 @@ function ShareForm() {
         if (data.title) setTitle(data.title)
         if (data.image) setImageUrl(data.image)
         if (data.price) setPrice(data.price)
+        if (data.url) setLinkUrl(data.url)
       })
       .catch(() => setMetaError('Could not load page info — you can fill in details manually.'))
       .finally(() => setStep('form'))
