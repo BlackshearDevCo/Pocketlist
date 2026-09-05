@@ -80,9 +80,11 @@ export async function GET(_req: NextRequest, { params }: Params) {
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { event, member, drawSession } = await resolveSession(params.id, session.user.id)
-  if (!event) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-  if (!member) return NextResponse.json({ error: 'Not a member' }, { status: 403 })
+  const resolved = await resolveSession(params.id, session.user.id)
+  if (!resolved.event) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+  if (!resolved.member) return NextResponse.json({ error: 'Not a member' }, { status: 403 })
+
+  const { event, member, drawSession } = resolved
 
   if (!drawSession) return NextResponse.json({ drawSession: null })
 
@@ -121,11 +123,13 @@ export async function POST(req: NextRequest, { params }: Params) {
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { event, member, drawSession } = await resolveSession(params.id, session.user.id)
-  if (!event) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-  if (!member || member.role !== 'ORGANIZER') {
+  const resolved = await resolveSession(params.id, session.user.id)
+  if (!resolved.event) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+  if (!resolved.member || resolved.member.role !== 'ORGANIZER') {
     return NextResponse.json({ error: 'Organizer only' }, { status: 403 })
   }
+
+  const { event, member: _member, drawSession } = resolved
 
   const body = await req.json().catch(() => ({}))
   const action: string = body.action ?? 'create'
@@ -138,12 +142,13 @@ export async function POST(req: NextRequest, { params }: Params) {
     }
 
     // Sync participants from current EventMembers
+    const members = event.members
     const newSession = await prisma.drawSession.create({
       data: {
         eventId: params.id,
         organizerId: session.user.id,
         participants: {
-          create: event.members.map((m) => ({
+          create: members.map((m) => ({
             name: m.displayName,
             userId: m.userId ?? undefined,
           })),
@@ -199,11 +204,13 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { event, member, drawSession } = await resolveSession(params.id, session.user.id)
-  if (!event) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
-  if (!member || member.role !== 'ORGANIZER') {
+  const resolved = await resolveSession(params.id, session.user.id)
+  if (!resolved.event) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+  if (!resolved.member || resolved.member.role !== 'ORGANIZER') {
     return NextResponse.json({ error: 'Organizer only' }, { status: 403 })
   }
+
+  const { drawSession } = resolved
 
   if (!drawSession) return NextResponse.json({ success: true })
 
