@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import ImageInput from '@/components/ImageInput'
 
 interface Props {
   list: { id: string; name: string }
@@ -169,9 +170,8 @@ export default function AddItemForm({ list, initialValues }: Props) {
             </select>
           </div>
           <div>
-            <label htmlFor="imageUrl" className="label">Image URL</label>
-            <input id="imageUrl" type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)}
-              className="input" placeholder="https://…" />
+            <label className="label">Image</label>
+            <ImageInput value={imageUrl} onChange={setImageUrl} />
           </div>
           <div>
             <label htmlFor="notes" className="label">Notes</label>
