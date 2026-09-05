@@ -29,17 +29,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
           {/* Nav */}
           <nav className="flex-1 space-y-0.5">
-            <Link href="/lists" className="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-600 hover:bg-parchment hover:text-warm-800 transition-colors">
-              <svg className="w-4 h-4 text-warm-400 group-hover:text-warm-600 transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-              </svg>
-              My Lists
-            </Link>
             <Link href="/events" className="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-600 hover:bg-parchment hover:text-warm-800 transition-colors">
               <svg className="w-4 h-4 text-warm-400 group-hover:text-warm-600 transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5" />
               </svg>
               Events
+            </Link>
+            <Link href="/lists" className="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-600 hover:bg-parchment hover:text-warm-800 transition-colors">
+              <svg className="w-4 h-4 text-warm-400 group-hover:text-warm-600 transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+              My Lists
             </Link>
           </nav>
         </div>
@@ -60,8 +60,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="md:hidden fixed top-0 left-0 right-0 z-10 bg-white border-b border-warm-200 px-4 py-3 flex items-center justify-between">
         <span className="font-serif text-lg text-warm-800">Pocketlist</span>
         <nav className="flex gap-1 items-center">
-          <Link href="/lists" className="px-3 py-1.5 rounded-lg text-sm font-medium text-warm-600 hover:bg-parchment transition-colors">Lists</Link>
           <Link href="/events" className="px-3 py-1.5 rounded-lg text-sm font-medium text-warm-600 hover:bg-parchment transition-colors">Events</Link>
+          <Link href="/lists" className="px-3 py-1.5 rounded-lg text-sm font-medium text-warm-600 hover:bg-parchment transition-colors">Lists</Link>
           <LogoutButton />
         </nav>
       </div>
