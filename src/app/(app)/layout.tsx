@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import Link from 'next/link'
+import LogoutButton from '@/components/LogoutButton'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -49,7 +50,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <div className="w-8 h-8 rounded-full bg-brand-tint flex items-center justify-center flex-shrink-0">
               <span className="text-xs font-semibold text-brand-dark">{initial}</span>
             </div>
-            <p className="text-sm font-medium text-warm-700 truncate">{displayName}</p>
+            <p className="text-sm font-medium text-warm-700 truncate flex-1 min-w-0">{displayName}</p>
+            <LogoutButton />
           </div>
         </div>
       </aside>
@@ -57,9 +59,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-10 bg-white border-b border-warm-200 px-4 py-3 flex items-center justify-between">
         <span className="font-serif text-lg text-warm-800">Pocketlist</span>
-        <nav className="flex gap-1">
+        <nav className="flex gap-1 items-center">
           <Link href="/lists" className="px-3 py-1.5 rounded-lg text-sm font-medium text-warm-600 hover:bg-parchment transition-colors">Lists</Link>
           <Link href="/events" className="px-3 py-1.5 rounded-lg text-sm font-medium text-warm-600 hover:bg-parchment transition-colors">Events</Link>
+          <LogoutButton />
         </nav>
       </div>
 
