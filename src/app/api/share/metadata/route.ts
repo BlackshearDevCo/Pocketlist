@@ -64,6 +64,7 @@ export async function GET(req: NextRequest) {
       )
     }
 
+    const finalUrl = response.url || fetchUrl
     const html = await response.text()
     const $ = cheerio.load(html)
 
@@ -79,7 +80,7 @@ export async function GET(req: NextRequest) {
     let image: string | undefined
     let price: string | undefined
 
-    if (isAmazonUrl(url)) {
+    if (isAmazonUrl(url) || isAmazonUrl(finalUrl)) {
       const amazon = extractAmazonData($)
       title = amazon.title
       image = amazon.image
@@ -103,7 +104,7 @@ export async function GET(req: NextRequest) {
       title = undefined
     }
 
-    return NextResponse.json({ title, image, description, price, url: fetchUrl })
+    return NextResponse.json({ title, image, description, price, url: finalUrl })
   } catch (error) {
     console.error('[share/metadata] error:', error)
     return NextResponse.json(
