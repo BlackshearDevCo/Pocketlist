@@ -23,8 +23,13 @@ type Step = 'loading' | 'form' | 'saving' | 'saved' | 'error'
 function ShareForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const sharedUrl = searchParams.get('url') || ''
-  const sharedTitle = searchParams.get('title') || searchParams.get('text') || ''
+  const rawText = searchParams.get('text') || ''
+  // Some apps (e.g. Amazon) put the URL in the `text` param instead of `url`
+  const urlFromText = rawText.match(/https?:\/\/[^\s]+/)?.[0] || ''
+  const sharedUrl = searchParams.get('url') || urlFromText || ''
+  // Use title param as title, but not if it's just the URL or Amazon's generic share text
+  const rawTitle = searchParams.get('title') || ''
+  const sharedTitle = (rawTitle && rawTitle !== sharedUrl && rawTitle !== 'Check out this deal on Amazon' && !rawTitle.startsWith('http')) ? rawTitle : ''
 
   const [step, setStep] = useState<Step>(sharedUrl ? 'loading' : 'form')
   const [metadata, setMetadata] = useState<Metadata | null>(null)
@@ -60,7 +65,7 @@ function ShareForm() {
       .then((r) => r.json())
       .then((data: Metadata) => {
         setMetadata(data)
-        if (data.title && !sharedTitle) setTitle(data.title)
+        if (data.title) setTitle(data.title)
         if (data.image) setImageUrl(data.image)
         if (data.price) setPrice(data.price)
       })
