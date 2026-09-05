@@ -73,10 +73,10 @@ export default function ListItem({ item, listId }: Props) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <h3 className={`font-medium leading-snug transition-colors ${purchased ? 'line-through text-warm-300' : 'text-warm-800'}`}>
+          <h3 className={`font-medium leading-snug break-words min-w-0 transition-colors ${purchased ? 'line-through text-warm-300' : 'text-warm-800'}`}>
             {item.linkUrl ? (
               <a href={item.linkUrl} target="_blank" rel="noopener noreferrer"
-                className="hover:text-brand transition-colors">{item.title}</a>
+                className="hover:text-brand transition-colors break-words">{item.title}</a>
             ) : item.title}
           </h3>
           <div className="flex items-center gap-2 flex-shrink-0">
