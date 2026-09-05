@@ -17,7 +17,7 @@ interface Props {
 export default function MyPickCard({ eventId, drawn, myAssignment }: Props) {
   // isRevealed = server knows; visible = what's shown on screen right now
   const [isRevealed, setIsRevealed] = useState(!!myAssignment?.revealedAt)
-  const [visible, setVisible] = useState(!!myAssignment?.revealedAt)
+  const [visible, setVisible] = useState(false)
   const [receiverName, setReceiverName] = useState(myAssignment?.receiverName ?? null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
