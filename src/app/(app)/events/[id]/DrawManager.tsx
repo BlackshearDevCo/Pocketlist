@@ -129,11 +129,14 @@ export default function DrawManager({ eventId, initialDraw }: Props) {
 
   // ── Phase: drawn ──────────────────────────────────────────────────────────
   if (isDrawn) {
+    const revealedCount = draw.assignments.filter((a) => a.revealedAt).length
+    const totalCount = draw.assignments.length
+
     return (
       <div className="card p-6 mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="section-title mb-0.5">Draw Results</h2>
+            <h2 className="section-title mb-0.5">Draw Names</h2>
             <p className="text-xs text-warm-400">
               Drawn {new Date(draw.drawnAt!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
@@ -156,19 +159,29 @@ export default function DrawManager({ eventId, initialDraw }: Props) {
           </div>
         </div>
         {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
-        <div className="space-y-2">
-          {draw.assignments.map((a) => (
-            <div key={a.id} className="flex items-center gap-3 py-2 border-b border-warm-100 last:border-0">
-              <span className="text-sm font-medium text-warm-700 w-1/2 truncate">{a.giverName}</span>
-              <svg className="w-4 h-4 text-warm-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-              <span className="text-sm text-warm-600 flex-1 truncate">{a.receiverName ?? '—'}</span>
-              {a.revealedAt && (
-                <span className="text-xs text-warm-400 flex-shrink-0">revealed</span>
-              )}
-            </div>
-          ))}
+        <div className="flex items-center gap-3 py-3 px-4 bg-brand-subtle rounded-xl">
+          <svg className="w-5 h-5 text-brand flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <p className="text-sm font-medium text-brand-dark">Names have been drawn</p>
+            <p className="text-xs text-warm-500">
+              {revealedCount} of {totalCount} {totalCount === 1 ? 'member has' : 'members have'} revealed their pick
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 space-y-1.5">
+          {draw.participants.map((p) => {
+            const assignment = draw.assignments.find((a) => a.giverId === p.id)
+            return (
+              <div key={p.id} className="flex items-center justify-between text-sm py-1">
+                <span className="text-warm-700">{p.name}</span>
+                <span className={`text-xs ${assignment?.revealedAt ? 'text-brand font-medium' : 'text-warm-300'}`}>
+                  {assignment?.revealedAt ? 'revealed' : 'not yet'}
+                </span>
+              </div>
+            )
+          })}
         </div>
       </div>
     )

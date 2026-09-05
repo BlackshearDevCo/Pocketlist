@@ -92,7 +92,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
   const assignments = drawSession.assignments.map((a) => {
     const isMyAssignment = a.giver.userId === session.user!.id
-    const revealed = isOrganizer || !!a.revealedAt
+    const revealed = isMyAssignment && !!a.revealedAt
     return {
       id: a.id,
       giverId: a.giverId,

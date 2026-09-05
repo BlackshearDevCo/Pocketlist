@@ -60,15 +60,19 @@ export default async function EventDetailPage({ params }: { params: { id: string
           giverId: e.giverId,
           receiverId: e.receiverId,
         })),
-        assignments: rawDraw.assignments.map((a) => ({
-          id: a.id,
-          giverId: a.giverId,
-          giverName: a.giver.name,
-          receiverId: a.receiverId,
-          receiverName: a.receiver.name,
-          revealedAt: a.revealedAt?.toISOString() ?? null,
-          isMyAssignment: a.giver.userId === userId,
-        })),
+        assignments: rawDraw.assignments.map((a) => {
+          const isMyAssignment = a.giver.userId === userId
+          const revealed = isMyAssignment && !!a.revealedAt
+          return {
+            id: a.id,
+            giverId: a.giverId,
+            giverName: a.giver.name,
+            receiverId: revealed ? a.receiverId : null,
+            receiverName: revealed ? a.receiver.name : null,
+            revealedAt: a.revealedAt?.toISOString() ?? null,
+            isMyAssignment,
+          }
+        }),
       }
     : null
 
