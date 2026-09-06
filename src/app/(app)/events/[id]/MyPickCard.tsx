@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import confetti from 'canvas-confetti'
 
 interface Props {
@@ -130,15 +129,6 @@ export default function MyPickCard({ eventId, drawn, myAssignment }: Props) {
               {receiverName}
             </p>
             <div className="flex items-center gap-4 mt-4">
-              {myAssignment.receiverListId && (
-                <Link
-                  href={`/lists/${myAssignment.receiverListId}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-xs font-semibold text-white/80 hover:text-white transition-colors underline underline-offset-2"
-                >
-                  View their list →
-                </Link>
-              )}
               <button
                 onClick={(e) => { e.stopPropagation(); setVisible(false) }}
                 className="text-xs font-semibold text-white/60 hover:text-white/90 transition-colors"
