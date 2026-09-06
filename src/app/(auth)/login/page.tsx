@@ -34,29 +34,39 @@ function LoginForm() {
     }
   }
 
+  const registerHref = callbackUrl !== '/lists'
+    ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`
+    : '/register'
+
   return (
-    <div className="card p-6">
-      {error && (
-        <div className="mb-4 rounded-xl bg-brand-subtle border border-brand-tint p-3 text-sm text-brand-dark">
-          {error}
-        </div>
-      )}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="label">Email</label>
-          <input id="email" type="email" autoComplete="email" required value={email}
-            onChange={(e) => setEmail(e.target.value)} className="input" placeholder="you@example.com" />
-        </div>
-        <div>
-          <label htmlFor="password" className="label">Password</label>
-          <input id="password" type="password" autoComplete="current-password" required value={password}
-            onChange={(e) => setPassword(e.target.value)} className="input" placeholder="••••••••" />
-        </div>
-        <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
-          {loading ? 'Signing in…' : 'Sign in'}
-        </button>
-      </form>
-    </div>
+    <>
+      <div className="card p-6">
+        {error && (
+          <div className="mb-4 rounded-xl bg-brand-subtle border border-brand-tint p-3 text-sm text-brand-dark">
+            {error}
+          </div>
+        )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="label">Email</label>
+            <input id="email" type="email" autoComplete="email" required value={email}
+              onChange={(e) => setEmail(e.target.value)} className="input" placeholder="you@example.com" />
+          </div>
+          <div>
+            <label htmlFor="password" className="label">Password</label>
+            <input id="password" type="password" autoComplete="current-password" required value={password}
+              onChange={(e) => setPassword(e.target.value)} className="input" placeholder="••••••••" />
+          </div>
+          <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
+            {loading ? 'Signing in…' : 'Sign in'}
+          </button>
+        </form>
+      </div>
+      <p className="mt-5 text-center text-sm text-warm-500">
+        Don&apos;t have an account?{' '}
+        <Link href={registerHref} className="font-semibold text-brand hover:text-brand-hover">Create one</Link>
+      </p>
+    </>
   )
 }
 
@@ -81,11 +91,6 @@ export default function LoginPage() {
         <Suspense fallback={<div className="card p-6" />}>
           <LoginForm />
         </Suspense>
-
-        <p className="mt-5 text-center text-sm text-warm-500">
-          Don&apos;t have an account?{' '}
-          <Link href="/register" className="font-semibold text-brand hover:text-brand-hover">Create one</Link>
-        </p>
       </div>
     </main>
   )

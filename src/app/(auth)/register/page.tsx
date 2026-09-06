@@ -1,11 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { signIn } from 'next-auth/react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/events'
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -26,7 +30,18 @@ export default function RegisterPage() {
       if (!res.ok) {
         setError(data.error || 'Registration failed.')
       } else {
-        router.push('/login?registered=1')
+        // Sign in immediately after registration so they land on the callback destination
+        const result = await signIn('credentials', { email, password, redirect: false })
+        if (result?.error) {
+          // Sign-in failed unexpectedly — fall back to login page with callbackUrl preserved
+          const loginUrl = callbackUrl !== '/events'
+            ? `/login?registered=1&callbackUrl=${encodeURIComponent(callbackUrl)}`
+            : '/login?registered=1'
+          router.push(loginUrl)
+        } else {
+          router.push(callbackUrl)
+          router.refresh()
+        }
       }
     } catch {
       setError('Something went wrong. Please try again.')
@@ -35,6 +50,48 @@ export default function RegisterPage() {
     }
   }
 
+  const loginHref = callbackUrl !== '/events'
+    ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+    : '/login'
+
+  return (
+    <>
+      <div className="card p-6">
+        {error && (
+          <div className="mb-4 rounded-xl bg-brand-subtle border border-brand-tint p-3 text-sm text-brand-dark">
+            {error}
+          </div>
+        )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="name" className="label">Name</label>
+            <input id="name" type="text" autoComplete="name" value={name}
+              onChange={(e) => setName(e.target.value)} className="input" placeholder="Your name" />
+          </div>
+          <div>
+            <label htmlFor="email" className="label">Email</label>
+            <input id="email" type="email" autoComplete="email" required value={email}
+              onChange={(e) => setEmail(e.target.value)} className="input" placeholder="you@example.com" />
+          </div>
+          <div>
+            <label htmlFor="password" className="label">Password</label>
+            <input id="password" type="password" autoComplete="new-password" required minLength={8} value={password}
+              onChange={(e) => setPassword(e.target.value)} className="input" placeholder="Min. 8 characters" />
+          </div>
+          <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
+            {loading ? 'Creating account…' : 'Create account'}
+          </button>
+        </form>
+      </div>
+      <p className="mt-5 text-center text-sm text-warm-500">
+        Already have an account?{' '}
+        <Link href={loginHref} className="font-semibold text-brand hover:text-brand-hover">Sign in</Link>
+      </p>
+    </>
+  )
+}
+
+export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-parchment px-6">
       <div className="w-full max-w-sm">
@@ -51,39 +108,9 @@ export default function RegisterPage() {
           <h1 className="font-serif text-3xl text-warm-800">Create account</h1>
           <p className="mt-1.5 text-sm text-warm-500">Start your first Pocketlist</p>
         </div>
-
-        <div className="card p-6">
-          {error && (
-            <div className="mb-4 rounded-xl bg-brand-subtle border border-brand-tint p-3 text-sm text-brand-dark">
-              {error}
-            </div>
-          )}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="label">Name</label>
-              <input id="name" type="text" autoComplete="name" value={name}
-                onChange={(e) => setName(e.target.value)} className="input" placeholder="Your name" />
-            </div>
-            <div>
-              <label htmlFor="email" className="label">Email</label>
-              <input id="email" type="email" autoComplete="email" required value={email}
-                onChange={(e) => setEmail(e.target.value)} className="input" placeholder="you@example.com" />
-            </div>
-            <div>
-              <label htmlFor="password" className="label">Password</label>
-              <input id="password" type="password" autoComplete="new-password" required minLength={8} value={password}
-                onChange={(e) => setPassword(e.target.value)} className="input" placeholder="Min. 8 characters" />
-            </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
-              {loading ? 'Creating account…' : 'Create account'}
-            </button>
-          </form>
-        </div>
-
-        <p className="mt-5 text-center text-sm text-warm-500">
-          Already have an account?{' '}
-          <Link href="/login" className="font-semibold text-brand hover:text-brand-hover">Sign in</Link>
-        </p>
+        <Suspense fallback={<div className="card p-6" />}>
+          <RegisterForm />
+        </Suspense>
       </div>
     </main>
   )
