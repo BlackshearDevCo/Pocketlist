@@ -17,14 +17,22 @@ export default async function EditItemPage({
       listId: params.id,
       list: { ownerId: session.user.id },
     },
-    include: { list: { select: { id: true, name: true } } },
+    include: {
+      list: {
+        select: {
+          id: true,
+          name: true,
+          bundles: { select: { id: true, name: true }, orderBy: { sortOrder: 'asc' } },
+        },
+      },
+    },
   })
 
   if (!item) notFound()
 
   return (
     <div className="max-w-lg mx-auto">
-      <EditItemForm item={item} list={item.list} />
+      <EditItemForm item={item} list={item.list} bundles={item.list.bundles} />
     </div>
   )
 }

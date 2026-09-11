@@ -66,12 +66,25 @@ model List {
   updatedAt   DateTime @updatedAt
   owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   items       Item[]
+  bundles     Bundle[]
   eventMembers EventMember[]
+}
+
+model Bundle {
+  id        String   @id @default(cuid())
+  listId    String
+  name      String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  list      List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  items     Item[]
 }
 
 model Item {
   id         String   @id @default(cuid())
   listId     String
+  bundleId   String?
   title      String
   imageUrl   String?
   price      Decimal? @db.Decimal(10, 2)
@@ -84,6 +97,7 @@ model Item {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   list       List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  bundle     Bundle?  @relation(fields: [bundleId], references: [id], onDelete: SetNull)
 }
 
 enum Priority {

@@ -9,14 +9,14 @@ export default async function AddItemPage({ params }: { params: { id: string } }
 
   const list = await prisma.list.findFirst({
     where: { id: params.id, ownerId: session.user.id },
-    select: { id: true, name: true },
+    select: { id: true, name: true, bundles: { select: { id: true, name: true }, orderBy: { sortOrder: 'asc' } } },
   })
 
   if (!list) notFound()
 
   return (
     <div className="max-w-lg mx-auto">
-      <AddItemForm list={list} />
+      <AddItemForm list={list} bundles={list.bundles} />
     </div>
   )
 }

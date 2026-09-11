@@ -5,8 +5,11 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import ImageInput from '@/components/ImageInput'
 
+interface Bundle { id: string; name: string }
+
 interface Props {
   list: { id: string; name: string }
+  bundles?: Bundle[]
   initialValues?: {
     title?: string
     imageUrl?: string
@@ -23,7 +26,7 @@ const PRIORITIES = [
   { value: 'LOW', label: 'Low' },
 ]
 
-export default function AddItemForm({ list, initialValues }: Props) {
+export default function AddItemForm({ list, bundles = [], initialValues }: Props) {
   const router = useRouter()
   const [title, setTitle] = useState(initialValues?.title || '')
   const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl || '')
@@ -32,6 +35,7 @@ export default function AddItemForm({ list, initialValues }: Props) {
   const [notes, setNotes] = useState(initialValues?.notes || '')
   const [priority, setPriority] = useState('')
   const [quantity, setQuantity] = useState('1')
+  const [bundleId, setBundleId] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [pasteState, setPasteState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
@@ -65,7 +69,7 @@ export default function AddItemForm({ list, initialValues }: Props) {
       const res = await fetch(`/api/lists/${list.id}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, imageUrl, price, linkUrl, notes, priority, quantity }),
+        body: JSON.stringify({ title, imageUrl, price, linkUrl, notes, priority, quantity, bundleId: bundleId || undefined }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -162,6 +166,16 @@ export default function AddItemForm({ list, initialValues }: Props) {
                 onChange={(e) => setQuantity(e.target.value)} className="input" />
             </div>
           </div>
+          {bundles.length > 0 && (
+            <div>
+              <label htmlFor="bundleId" className="label">Bundle</label>
+              <select id="bundleId" value={bundleId} onChange={(e) => setBundleId(e.target.value)}
+                className="input bg-white">
+                <option value="">None</option>
+                {bundles.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+              </select>
+            </div>
+          )}
           <div>
             <label htmlFor="priority" className="label">Priority</label>
             <select id="priority" value={priority} onChange={(e) => setPriority(e.target.value)}

@@ -25,7 +25,7 @@ export async function PATCH(
   if (!item) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   try {
-    const { title, imageUrl, price, linkUrl, notes, priority, quantity, purchased } = await req.json()
+    const { title, imageUrl, price, linkUrl, notes, priority, quantity, purchased, bundleId } = await req.json()
 
     if (purchased !== undefined && title === undefined) {
       const updated = await prisma.item.update({
@@ -49,6 +49,7 @@ export async function PATCH(
         notes: notes?.trim() || null,
         priority: priority || null,
         quantity: quantity ? parseInt(quantity) : 1,
+        bundleId: bundleId !== undefined ? (bundleId || null) : undefined,
         ...(purchased !== undefined && { purchased }),
       },
     })

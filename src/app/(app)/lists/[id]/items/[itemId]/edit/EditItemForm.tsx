@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { Priority } from '@prisma/client'
 import ImageInput from '@/components/ImageInput'
 
+interface Bundle { id: string; name: string }
+
 interface Props {
   item: {
     id: string
@@ -16,8 +18,10 @@ interface Props {
     notes: string | null
     priority: Priority | null
     quantity: number
+    bundleId: string | null
   }
   list: { id: string; name: string }
+  bundles?: Bundle[]
 }
 
 const PRIORITIES = [
@@ -27,7 +31,7 @@ const PRIORITIES = [
   { value: 'LOW', label: 'Low' },
 ]
 
-export default function EditItemForm({ item, list }: Props) {
+export default function EditItemForm({ item, list, bundles = [] }: Props) {
   const router = useRouter()
   const [title, setTitle] = useState(item.title)
   const [imageUrl, setImageUrl] = useState(item.imageUrl || '')
@@ -36,6 +40,7 @@ export default function EditItemForm({ item, list }: Props) {
   const [notes, setNotes] = useState(item.notes || '')
   const [priority, setPriority] = useState(item.priority || '')
   const [quantity, setQuantity] = useState(String(item.quantity))
+  const [bundleId, setBundleId] = useState(item.bundleId || '')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -48,7 +53,7 @@ export default function EditItemForm({ item, list }: Props) {
       const res = await fetch(`/api/lists/${list.id}/items/${item.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, imageUrl, price, linkUrl, notes, priority, quantity }),
+        body: JSON.stringify({ title, imageUrl, price, linkUrl, notes, priority, quantity, bundleId: bundleId || null }),
       })
       if (!res.ok) {
         const data = await res.json()
@@ -121,6 +126,16 @@ export default function EditItemForm({ item, list }: Props) {
                 onChange={(e) => setQuantity(e.target.value)} className="input" />
             </div>
           </div>
+          {bundles.length > 0 && (
+            <div>
+              <label htmlFor="bundleId" className="label">Bundle</label>
+              <select id="bundleId" value={bundleId} onChange={(e) => setBundleId(e.target.value)}
+                className="input bg-white">
+                <option value="">None</option>
+                {bundles.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+              </select>
+            </div>
+          )}
           <div>
             <label htmlFor="priority" className="label">Priority</label>
             <select id="priority" value={priority} onChange={(e) => setPriority(e.target.value)}

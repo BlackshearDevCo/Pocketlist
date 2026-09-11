@@ -14,7 +14,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   if (!list) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   try {
-    const { title, imageUrl, price, linkUrl, notes, priority, quantity } = await req.json()
+    const { title, imageUrl, price, linkUrl, notes, priority, quantity, bundleId } = await req.json()
 
     if (!title?.trim()) {
       return NextResponse.json({ error: 'Title is required.' }, { status: 400 })
@@ -36,6 +36,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         notes: notes?.trim() || null,
         priority: priority || null,
         quantity: quantity ? parseInt(quantity) : 1,
+        bundleId: bundleId || null,
         sortOrder: (lastItem?.sortOrder ?? -1) + 1,
       },
     })
