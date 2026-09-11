@@ -136,7 +136,7 @@ export default function MemberCard({ member, isMe }: Props) {
                       <p className="font-semibold text-sm text-warm-800 flex-1">{bundle.name}</p>
                       {total && <p className="text-xs font-semibold text-warm-500">${total} total</p>}
                     </div>
-                    <div className="ml-3 border border-t-0 border-warm-200 rounded-b-xl overflow-hidden mb-1">
+                    <div className="border border-t-0 border-warm-200 rounded-b-xl overflow-hidden mb-1">
                       <ul className="divide-y divide-warm-100">
                         {bundleItems.map((item) => (
                           <li key={item.id} className="flex items-center gap-3 px-3 py-2.5">

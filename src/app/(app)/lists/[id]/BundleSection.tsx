@@ -119,11 +119,11 @@ export default function BundleSection({ bundle, items, listId }: Props) {
 
       {/* Items — indented and visually connected to the header */}
       {items.length === 0 ? (
-        <div className="ml-5 rounded-b-xl border border-t-0 border-dashed border-warm-200 px-4 py-3 text-sm text-warm-300 text-center">
+        <div className="rounded-b-xl border border-t-0 border-dashed border-warm-200 px-4 py-3 text-sm text-warm-300 text-center">
           No items yet — assign items to this bundle when adding or editing them
         </div>
       ) : (
-        <div className="ml-5 border border-t-0 border-warm-200 rounded-b-xl overflow-hidden">
+        <div className="border border-t-0 border-warm-200 rounded-b-xl overflow-hidden">
           <ul className="divide-y divide-warm-100">
             {items.map((item) => (
               <ListItem key={item.id} item={item} listId={listId} bundled />
