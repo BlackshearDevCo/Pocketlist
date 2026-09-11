@@ -23,9 +23,10 @@ interface Props {
     purchased: boolean
   }
   listId: string
+  bundled?: boolean
 }
 
-export default function ListItem({ item, listId }: Props) {
+export default function ListItem({ item, listId, bundled = false }: Props) {
   const [purchased, setPurchased] = useState(item.purchased)
   const [pending, setPending] = useState(false)
   const [notesExpanded, setNotesExpanded] = useState(false)
@@ -49,7 +50,7 @@ export default function ListItem({ item, listId }: Props) {
   }
 
   return (
-    <li className={`card p-4 flex gap-4 items-center group transition-colors ${purchased ? 'bg-warm-50 border-warm-100' : 'hover:border-warm-300'}`}>
+    <li className={`flex gap-4 items-center group transition-colors p-4 ${bundled ? (purchased ? 'bg-warm-50' : 'bg-white hover:bg-parchment/50') : `card ${purchased ? 'bg-warm-50 border-warm-100' : 'hover:border-warm-300'}`}`}>
       <button
         onClick={toggle}
         disabled={pending}

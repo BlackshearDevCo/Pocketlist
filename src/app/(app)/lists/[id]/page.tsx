@@ -86,16 +86,11 @@ export default async function ListDetailPage({ params }: { params: { id: string 
 
           {/* Unbundled items */}
           {unbundledItems.length > 0 && (
-            <div>
-              {list.bundles.length > 0 && (
-                <h3 className="text-sm font-semibold text-warm-600 uppercase tracking-wide mb-2">Other items</h3>
-              )}
-              <ul className="space-y-3">
-                {unbundledItems.map((item) => (
-                  <ListItem key={item.id} item={item} listId={list.id} />
-                ))}
-              </ul>
-            </div>
+            <ul className="space-y-3">
+              {unbundledItems.map((item) => (
+                <ListItem key={item.id} item={item} listId={list.id} />
+              ))}
+            </ul>
           )}
         </>
       )}
