@@ -28,6 +28,7 @@ interface Props {
 export default function ListItem({ item, listId }: Props) {
   const [purchased, setPurchased] = useState(item.purchased)
   const [pending, setPending] = useState(false)
+  const [notesExpanded, setNotesExpanded] = useState(false)
 
   async function toggle() {
     if (pending) return
@@ -97,7 +98,17 @@ export default function ListItem({ item, listId }: Props) {
           </p>
         )}
         {item.notes && !purchased && (
-          <p className="text-sm text-warm-400 mt-1 line-clamp-2">{item.notes}</p>
+          <div className="mt-1">
+            <p className={`text-sm text-warm-400 ${notesExpanded ? '' : 'line-clamp-2'}`}>{item.notes}</p>
+            {item.notes.length > 120 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setNotesExpanded((x) => !x) }}
+                className="text-xs text-warm-400 hover:text-warm-600 transition-colors mt-0.5"
+              >
+                {notesExpanded ? 'Show less' : 'Show more'}
+              </button>
+            )}
+          </div>
         )}
         {item.quantity > 1 && !purchased && (
           <p className="text-xs text-warm-300 mt-1">Qty: {item.quantity}</p>
