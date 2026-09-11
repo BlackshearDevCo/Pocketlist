@@ -95,7 +95,14 @@ export default function BundleSection({ bundle, items, listId }: Props) {
             </button>
           </>
         )}
-        <span className="text-xs text-warm-300 ml-auto">{items.length} {items.length === 1 ? 'item' : 'items'}</span>
+        <div className="ml-auto flex items-center gap-2">
+          {(() => {
+            const total = items.filter((i) => i.price !== null).reduce((s, i) => s + (i.price ?? 0), 0)
+            const hasPrices = items.some((i) => i.price !== null)
+            return hasPrices ? <span className="text-xs font-semibold text-warm-500">${total.toFixed(2)}</span> : null
+          })()}
+          <span className="text-xs text-warm-300">{items.length} {items.length === 1 ? 'item' : 'items'}</span>
+        </div>
       </div>
 
       {items.length === 0 ? (

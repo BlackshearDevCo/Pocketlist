@@ -20,7 +20,10 @@ export default async function EventDetailPage({ params }: { params: { id: string
         include: {
           user: { select: { id: true, name: true, email: true } },
           attachedList: {
-            include: { items: { orderBy: { sortOrder: 'asc' } } },
+            include: {
+              items: { orderBy: { sortOrder: 'asc' } },
+              bundles: { orderBy: { sortOrder: 'asc' } },
+            },
           },
         },
         orderBy: { role: 'desc' },
@@ -209,7 +212,9 @@ export default async function EventDetailPage({ params }: { params: { id: string
               member={{
                 ...member,
                 attachedList: member.attachedList ? {
-                  ...member.attachedList,
+                  id: member.attachedList.id,
+                  name: member.attachedList.name,
+                  bundles: member.attachedList.bundles.map((b) => ({ id: b.id, name: b.name })),
                   items: member.attachedList.items.map((item) => ({
                     id: item.id,
                     title: item.title,
@@ -217,6 +222,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
                     imageUrl: item.imageUrl,
                     linkUrl: item.linkUrl,
                     notes: item.notes,
+                    bundleId: item.bundleId,
                   })),
                 } : null,
               }}
