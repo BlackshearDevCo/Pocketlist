@@ -211,8 +211,12 @@ export default async function EventDetailPage({ params }: { params: { id: string
                 attachedList: member.attachedList ? {
                   ...member.attachedList,
                   items: member.attachedList.items.map((item) => ({
-                    ...item,
+                    id: item.id,
+                    title: item.title,
                     price: item.price ? Number(item.price) : null,
+                    imageUrl: item.imageUrl,
+                    linkUrl: item.linkUrl,
+                    notes: item.notes,
                   })),
                 } : null,
               }}

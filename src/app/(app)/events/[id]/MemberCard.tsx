@@ -8,6 +8,7 @@ interface Item {
   price: number | null
   imageUrl: string | null
   linkUrl: string | null
+  notes: string | null
 }
 
 interface Props {
@@ -83,6 +84,9 @@ export default function MemberCard({ member, isMe }: Props) {
                     <p className="text-sm text-warm-700 break-words">{item.title}</p>
                     {item.price && (
                       <p className="text-xs text-warm-400">${Number(item.price).toFixed(2)}</p>
+                    )}
+                    {item.notes && (
+                      <p className="text-xs text-warm-400 mt-0.5 break-words">{item.notes}</p>
                     )}
                   </div>
                   {item.linkUrl && (
